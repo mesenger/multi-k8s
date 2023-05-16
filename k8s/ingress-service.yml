@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    # This is the nginx controller that will be used
+    kubernetes.io/ingress.class: nginx
+    # This is the external IP address that will be used
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # This is the external host name that will be used
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          - path: /api/?(.*)
+            pathType: Prefix
+            # This is the service that will be used
+            backend:
+              service:
+                name: server-cluster-ip-service
+                port:
+                  number: 5000
+          # - path: /api/values/?(.*)
+          #   pathType: Prefix
+          #   # This is the service that will be used
+            # backend:
+            #   service:
+            #     name: worker-cluster-ip-service
+            #     port:
+            #       number: 5000
